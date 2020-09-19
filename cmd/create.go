@@ -20,7 +20,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"strings"
 	"github.com/spf13/cobra"
-	"github.com/AlecAivazis/survey"
+	"github.com/AlecAivazis/survey/v2"
 	"os"
 )
 
@@ -85,7 +85,7 @@ func promptUserForModules() []string {
 	modules := []string{}
 	prompt := &survey.MultiSelect{
     	Message: "What modules do you want:",
-    	Options: []string{"Router", "Database", "Models"},
+    	Options: []string{"Router", "Database", "Docker"},
 	}
 	survey.AskOne(prompt, &modules)
 
