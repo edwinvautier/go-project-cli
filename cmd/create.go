@@ -16,10 +16,12 @@ limitations under the License.
 package cmd
 
 import (
+	"github.com/edwinvautier/go-project-cli/services"
 	log "github.com/sirupsen/logrus"
 	"strings"
 	"github.com/spf13/cobra"
 	"github.com/AlecAivazis/survey"
+	"os"
 )
 
 // createCmd represents the create command
@@ -38,7 +40,15 @@ var createCmd = &cobra.Command{
 			}
 		}
 
-		promptUserForModules()
+		// Ask the user for the modules he wants
+		modules := promptUserForModules()
+
+		path, err := os.Getwd()
+		if err != nil {
+			log.Fatal("Couldn't find the current directory.")
+		}
+
+		services.CreateStructure(path + "/" + appName, modules)
 	},
 }
 
@@ -71,11 +81,13 @@ func promptUserForAppName(appName string) bool{
 	}
 	return false
 }
-func promptUserForModules() {
+func promptUserForModules() []string {
 	modules := []string{}
 	prompt := &survey.MultiSelect{
     	Message: "What modules do you want:",
     	Options: []string{"Router", "Database", "Models"},
 	}
 	survey.AskOne(prompt, &modules)
+
+	return modules
 }
