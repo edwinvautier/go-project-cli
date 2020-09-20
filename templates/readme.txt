@@ -6,7 +6,8 @@ A simple description of what your project will do.
 
 {{if .HasDocker}}### With docker
 ```sh
-docker-compose exec app /bin/sh
+docker-compose up --build
+docker-compose exec {{.AppName}}api /bin/sh
 
 go build -o main .
 

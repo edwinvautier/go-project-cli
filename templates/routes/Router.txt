@@ -6,14 +6,15 @@ import (
 )
 
 func SetupRouter(router *gin.Engine) {
-	api := router.Group("/api") {
-		router.GET("/", controllers.SayHello)
+	api := router.Group("/api")
+	{
+		api.GET("/", controllers.SayHello)
 
-		v1 := router.Group("/v1") {
-
+		v1 := api.Group("/v1")
+		{
 			// Players
-			router.GET("/players/:id", controllers.FindPlayer)
-			router.PUT("/players/:id", controllers.EditPlayer)
+			v1.GET("/players/:id", controllers.FindPlayer)
+			v1.PUT("/players/:id", controllers.EditPlayer)
 		}
 	}
 	
