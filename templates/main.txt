@@ -1,0 +1,52 @@
+package main
+
+import ({{if .HasRouter}}
+	"github.com/gin-gonic/gin"
+	"github.com/itsjamie/gin-cors"
+	"github.com/{{.Username}}/{{.AppName}}/routes"
+	{{end}}{{if .HasDB}}
+	"github.com/caarlos0/env/v6"
+	"github.com/{{.Username}}/{{.AppName}}/models"
+	{{end}}
+	"log"
+	"time"
+)
+
+{{if .HasDB}}
+type config struct {
+	DbUser     string `env:"DB_USER"`
+	DbPassword string `env:"DB_PASSWORD"`
+	DbPort     int    `env:"DB_PORT" envDefault:"5432"`
+	DbHost     string `env:"DB_HOST"`
+	DbName     string `env:"DB_NAME"`
+}
+{{end}}
+func main() {
+	{{if .HasDB}}
+	cfg := config{}
+	if err := env.Parse(&cfg); err != nil {
+		log.Fatal(err)
+	}
+	
+	// Connect to database
+	models.InitializeDb(cfg.DbUser, cfg.DbPassword, cfg.DbHost, cfg.DbName, cfg.DbPort)
+	models.MakeMigrations()
+	{{end}}
+	{{if .HasRouter}}
+	r := gin.Default()
+
+	r.Use(cors.Middleware(cors.Config{
+		Origins:         "*",
+		Methods:         "GET, PUT, POST, DELETE",
+		RequestHeaders:  "Origin, Authorization, Content-Type",
+		ExposedHeaders:  "Authorization",
+		MaxAge:          50 * time.Second,
+		Credentials:     true,
+		ValidateHeaders: false,
+	}))
+
+	routes.SetupRouter(r)
+
+	log.Fatal(r.Run(":8000")) // listen and serve on 8000
+	{{end}}
+}

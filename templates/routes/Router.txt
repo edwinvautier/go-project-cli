@@ -1,0 +1,20 @@
+package routes
+
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/{{.Username}}/{{.AppName}}/controllers"
+)
+
+func SetupRouter(router *gin.Engine) {
+	api := router.Group("/api") {
+		router.GET("/", controllers.SayHello)
+
+		v1 := router.Group("/v1") {
+
+			// Players
+			router.GET("/players/:id", controllers.FindPlayer)
+			router.PUT("/players/:id", controllers.EditPlayer)
+		}
+	}
+	
+}

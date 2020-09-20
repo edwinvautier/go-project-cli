@@ -1,0 +1,66 @@
+package models
+
+import (
+	"github.com/jinzhu/gorm"
+	"errors"
+)
+
+type Player struct {
+	ID uint64         `gorm:"primary_key"`
+	Name string       `gorm:"size:255"`
+}
+
+func CreatePlayer(player *Player) (*Player, error) {
+	var err error
+	
+	err = db.Debug().Create(&player).Error
+	if err != nil {
+		return &Player{}, err
+	}
+	return player, nil
+}
+
+func EditPlayerByID(player *Player, id uint64) error {
+	var err error
+	var old Player
+	err = db.Debug().Where("id = ?", id).First(&old).Error
+	if gorm.IsRecordNotFoundError(err) {
+		return errors.New("Player Not Found")
+	}
+	player.ID = id
+
+	err = db.Debug().Save(&player).Error
+	if err != nil {
+		return errors.New("Could'nt update player")
+	}
+
+	return nil
+}
+
+func DeletePlayerByID(id uint64) (Player, error) {
+
+	var err error
+	var player Player
+
+	err = db.Debug().Delete(&player, id).Error
+	if err != nil {
+		return Player{}, err
+	}
+	if gorm.IsRecordNotFoundError(err) {
+		return Player{}, errors.New("Player Not Found")
+	}
+	return player, err
+}
+
+func FindPlayerByID(uid uint64) (*Player, error) {
+	var err error
+	var player Player
+	err = db.Debug().Model(Player{}).Where("id = ?", uid).Take(&player).Error
+	if err != nil {
+		return &Player{}, err
+	}
+	if gorm.IsRecordNotFoundError(err) {
+		return &Player{}, errors.New("Player Not Found")
+	}
+	return &player, err
+}
