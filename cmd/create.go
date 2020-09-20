@@ -24,6 +24,7 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/edwinvautier/go-project-cli/services"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"github.com/spf13/cobra"
 )
 
@@ -42,9 +43,15 @@ var createCmd = &cobra.Command{
 				return
 			}
 		}
-
-		// Ask the user for it's github username
-		username := promptUserForGitUsername()
+		var username string
+		if viper.GetString("username") != "" {
+			username = viper.GetString("username")
+		} else {
+			// Ask the user for it's github username
+			username = promptUserForGitUsername()
+			viper.Set("username", username)
+			viper.WriteConfig()
+		}
 
 		// Ask the user for the modules he wants
 		modules := promptUserForModules()
