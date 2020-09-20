@@ -1,0 +1,41 @@
+package controllers
+
+import (
+	{{if .HasDB}}"github.com/{{.Username}}/{{.AppName}}/models"{{end}}
+	"github.com/{{.Username}}/{{.AppName}}/services"
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
+
+func FindPlayer(c *gin.Context) {
+	id := services.ConvertStringToInt(c.Param("id"))
+
+	{{if .HasDB}}var player *models.Player
+	var err error
+	player, err = models.FindPlayerByID(id)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, err)
+	}
+
+	c.JSON(http.StatusOK, player){{else}}
+	c.JSON(http.StatusOK, "You requested player with id " + c.Param("id")){{end}}
+}
+
+func EditPlayer(c *gin.Context) {
+	id := services.ConvertStringToInt(c.Param("id"))
+	{{if .HasDB}}var player models.Player
+
+	if err := c.ShouldBindJSON(&player); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+	err := models.EditPlayerByID(&player, id)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, err)
+	}
+
+	c.JSON(http.StatusOK, player){{else}}
+	c.JSON(http.StatusModified, "You modified player with id " + c.Param("id")){{end}}
+}

@@ -14,9 +14,11 @@ type Config struct {
 	HasDocker 	bool
 	Path 		string
 	Box			*packr.Box
+	Username 	string
+	AppName 	string
 }
 
-func CreateStructure(path string, modules []string) {
+func CreateStructure(path string, modules []string, username string, appName string) {
 	// Create the folder for the new project
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		os.Mkdir(path, os.ModePerm)
@@ -43,6 +45,8 @@ func CreateStructure(path string, modules []string) {
 		HasRouter: 	false,
 		HasDocker: 	false,
 		Path: 		path,
+		Username: 	username,
+		AppName: 	appName,
 	}
 	for _, module := range modules {
 		switch module {
@@ -55,7 +59,7 @@ func CreateStructure(path string, modules []string) {
 		}
 	}
 
-	initRepository(path)
+	initGitRepository(path)
 	generateTemplates(config)
 }
 
@@ -64,14 +68,30 @@ func generateTemplates(config Config) {
 	config.Box = packr.New("My Box", "../templates")
 
 	executeTemplate("", "main.txt", "main.go", config)
+	executeTemplate("", "go.mod.txt", "go.mod", config)
+	executeTemplate("", "readme.txt", "README.md", config)
+	executeTemplate("", "gitignore.txt", ".gitignore", config)
+	executeTemplate("services/", "lib.txt", "lib.go", config)
+	
+	if config.HasDB {
+		executeTemplate("models/", "PlayerStruct.txt", "PlayerStruct.go", config)
+		executeTemplate("models/", "DBConnector.txt", "DBConnector.go", config)
+		executeTemplate("models/", "migrations.txt", "Migrations.go", config)
+	}
+
+	if config.HasRouter {
+		executeTemplate("routes/", "Router.txt", "Router.go", config)
+		executeTemplate("controllers/", "PlayersController.txt", "PlayersController.go", config)
+		executeTemplate("controllers/", "RootController.txt", "RootController.go", config)
+	}
 }
 
-func initRepository(path string) {
+func initGitRepository(path string) {
 	// Init git repository
 	err := exec.Command("git", "init", path).Run()
 	if err != nil {
 		log.Error(err)
-	}	
+	}
 }
 
 func removeAll(path string) {

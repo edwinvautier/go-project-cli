@@ -43,6 +43,9 @@ var createCmd = &cobra.Command{
 			}
 		}
 
+		// Ask the user for it's github username
+		username := promptUserForGitUsername()
+
 		// Ask the user for the modules he wants
 		modules := promptUserForModules()
 
@@ -51,7 +54,7 @@ var createCmd = &cobra.Command{
 			log.Fatal("Couldn't find the current directory.")
 		}
 
-		services.CreateStructure(path+"/"+appName, modules)
+		services.CreateStructure(path+"/"+appName, modules, username, appName)
 	},
 }
 
@@ -99,4 +102,14 @@ func promptUserForModules() []string {
 	survey.AskOne(prompt, &modules)
 
 	return modules
+}
+
+func promptUserForGitUsername() string{
+	var name string
+	prompt := &survey.Input{
+		Message: "What's your github username ?",
+	}
+	survey.AskOne(prompt, &name)
+
+	return name
 }

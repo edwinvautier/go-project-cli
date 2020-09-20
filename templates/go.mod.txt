@@ -1,0 +1,11 @@
+module github.com/{{.Username}}/{{.AppName}}
+
+go 1.14
+
+require (
+	{{if .HasRouter}}github.com/gin-gonic/gin v1.6.3
+	github.com/itsjamie/gin-cors v0.0.0-20160420130702-97b4a9da7933{{end}}
+
+	{{if .HasDB}}github.com/caarlos0/env/v6 v6.3.0
+	github.com/jinzhu/gorm v1.9.15{{end}}
+)

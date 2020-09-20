@@ -14,6 +14,11 @@ func executeTemplate(path string, name string, outputName string, config Config)
 		return
 	}
 
+	// Create the directory if not exist
+	if _, err := os.Stat(config.Path + "/" + path); os.IsNotExist(err) {
+		os.Mkdir(config.Path + "/" + path, os.ModePerm)
+	}
+
 	// Create the file
 	file, err := os.Create(config.Path + "/" + path + outputName)
 	if err != nil {
