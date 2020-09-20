@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+  {{if .HasDB}}{{.AppName}}db:
+    image: postgres:11-alpine
+    restart: always
+    container_name: postgres
+    environment:
+      POSTGRES_DATABASE: {{.AppName}}
+      POSTGRES_USER: {{.AppName}}
+      POSTGRES_PASSWORD: {{.AppName}}pwd
+    ports:
+    - "5432:5432"{{end}}
+  {{.AppName}}api:
+    build: .
+    {{if .HasDB}}environment:
+      DB_USER: {{.AppName}}
+      DB_PASSWORD: {{.AppName}}pwd
+      DB_HOST: {{.AppName}}db
+      DB_PORT: 5432
+      DB_NAME: {{.AppName}}{{end}}
+    volumes:
+      - ".:/go/src"
+    ports:
+      - "8000:8000"
+    tty: true
+    {{if .HasDB}}links:
+      - {{.AppName}}db
+    depends_on:
+      - {{.AppName}}db
+  {{.AppName}}admin:
+    image: adminer
+    container_name: adminer
+    restart: always
+    links:
+      - {{.AppName}}db
+    ports:
+      - 3000:8080{{end}}

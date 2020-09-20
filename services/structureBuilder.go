@@ -84,6 +84,11 @@ func generateTemplates(config Config) {
 		executeTemplate("controllers/", "PlayersController.txt", "PlayersController.go", config)
 		executeTemplate("controllers/", "RootController.txt", "RootController.go", config)
 	}
+
+	if config.HasDocker {
+		executeTemplate("", "dockerfile.txt", "Dockerfile", config)
+		executeTemplate("", "docker-compose.txt", "docker-compose.yml", config)
+	}
 }
 
 func initGitRepository(path string) {
