@@ -21,3 +21,11 @@ cd go-project-cli
 
 make uninstall
 ```
+
+--- 
+
+## Documentation
+
+|command|description|example|
+|-|-|-|
+|create|Creates a repository with the configuration you want.|`go-cli create my-app`|
