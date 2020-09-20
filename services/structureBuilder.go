@@ -1,7 +1,6 @@
 package services
 
 import (
-	"html/template"
 	"os"
 
 	"github.com/AlecAivazis/survey/v2"
@@ -10,9 +9,11 @@ import (
 )
 
 type Config struct {
-	HasRouter bool
-	HasDB     bool
-	HasDocker bool
+	HasRouter 	bool
+	HasDB     	bool
+	HasDocker 	bool
+	Path 		string
+	Box			*packr.Box
 }
 
 func CreateStructure(path string, modules []string) {
@@ -38,9 +39,10 @@ func CreateStructure(path string, modules []string) {
 
 	// Generate the config object
 	config := Config{
-		HasDB:     false,
-		HasRouter: false,
-		HasDocker: false,
+		HasDB:     	false,
+		HasRouter: 	false,
+		HasDocker: 	false,
+		Path: 		path,
 	}
 	for _, module := range modules {
 		switch module {
@@ -57,18 +59,10 @@ func CreateStructure(path string, modules []string) {
 }
 
 func generateTemplates(config Config) {
-	box := packr.New("My Box", "../templates")
-	main, err := box.FindString("main.txt")
-	if err != nil {
-		log.Error(err)
-		return
-	}
+	// Generate packr Box
+	config.Box = packr.New("My Box", "../templates")
 
-	mainTmp := template.Must(template.New("main").Parse(main))
-	err = mainTmp.Execute(os.Stdout, config)
-	if err != nil {
-		log.Error(err)
-	}
+	executeTemplate("", "main.txt", "main.go", config)
 }
 
 func removeAll(path string) {
