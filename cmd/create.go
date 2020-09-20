@@ -16,19 +16,22 @@ limitations under the License.
 package cmd
 
 import (
+	"os"
+	"os/signal"
+	"strings"
+	"syscall"
+
+	"github.com/AlecAivazis/survey/v2"
 	"github.com/edwinvautier/go-project-cli/services"
 	log "github.com/sirupsen/logrus"
-	"strings"
 	"github.com/spf13/cobra"
-	"github.com/AlecAivazis/survey/v2"
-	"os"
 )
 
 // createCmd represents the create command
 var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "This command is used to initialize a new application.",
-	Long: `This command is used to initialize a new application.`,
+	Long:  `This command is used to initialize a new application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		appName := strings.Join(args, "-")
 
@@ -48,13 +51,19 @@ var createCmd = &cobra.Command{
 			log.Fatal("Couldn't find the current directory.")
 		}
 
-		services.CreateStructure(path + "/" + appName, modules)
+		services.CreateStructure(path+"/"+appName, modules)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(createCmd)
-
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		<-c
+		log.Info("Exiting...")
+		os.Exit(1)
+	}()
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
@@ -66,16 +75,16 @@ func init() {
 	// createCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func promptUserForAppName(appName string) bool{
+func promptUserForAppName(appName string) bool {
 	log.Warn("1 parameter expected: application name.")
-			
+
 	answer := true
 	prompt := &survey.Confirm{
 		Message: "Do you want to use this name: " + appName + " ?",
 		Default: true,
 	}
 	survey.AskOne(prompt, &answer)
-	
+
 	if answer == false {
 		return true
 	}
@@ -84,8 +93,8 @@ func promptUserForAppName(appName string) bool{
 func promptUserForModules() []string {
 	modules := []string{}
 	prompt := &survey.MultiSelect{
-    	Message: "What modules do you want:",
-    	Options: []string{"Router", "Database", "Docker"},
+		Message: "What modules do you want:",
+		Options: []string{"Router", "Database", "Docker"},
 	}
 	survey.AskOne(prompt, &modules)
 

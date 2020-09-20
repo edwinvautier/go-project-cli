@@ -1,19 +1,19 @@
 package main
 
 import (
-	{{if .hasRouter}}
+	{{if .HasRouter}}
 	"github.com/gin-gonic/gin"
 	"github.com/itsjamie/gin-cors"
 	{{end}}
 
-	{{if .hasDB}}
+	{{if .HasDB}}
 	"github.com/caarlos0/env/v6"
 	{{end}}
 	"log"
 	"time"
 )
 
-{{if .hasDB}}
+{{if .HasDB}}
 type config struct {
 	DbUser     string `env:"DB_USER"`
 	DbPassword string `env:"DB_PASSWORD"`
@@ -23,7 +23,7 @@ type config struct {
 }
 {{end}}
 func main() {
-	{{if .hasDB}}
+	{{if .HasDB}}
 	cfg := config{}
 	if err := env.Parse(&cfg); err != nil {
 		log.Fatal(err)
@@ -33,7 +33,7 @@ func main() {
 	models.InitializeDb(cfg.DbUser, cfg.DbPassword, cfg.DbHost, cfg.DbName, cfg.DbPort)
 	models.MakeMigrations()
 	{{end}}
-	{{if .hasRouter}}
+	{{if .HasRouter}}
 	r := gin.Default()
 
 	r.Use(cors.Middleware(cors.Config{

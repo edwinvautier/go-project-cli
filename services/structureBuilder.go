@@ -10,9 +10,9 @@ import (
 )
 
 type Config struct {
-	hasRouter bool
-	hasDB     bool
-	hasDocker bool
+	HasRouter bool
+	HasDB     bool
+	HasDocker bool
 }
 
 func CreateStructure(path string, modules []string) {
@@ -38,18 +38,18 @@ func CreateStructure(path string, modules []string) {
 
 	// Generate the config object
 	config := Config{
-		hasDB:     false,
-		hasRouter: false,
-		hasDocker: false,
+		HasDB:     false,
+		HasRouter: false,
+		HasDocker: false,
 	}
 	for _, module := range modules {
 		switch module {
 		case "Router":
-			config.hasRouter = true
+			config.HasRouter = true
 		case "Docker":
-			config.hasDocker = true
+			config.HasDocker = true
 		case "Database":
-			config.hasDB = true
+			config.HasDB = true
 		}
 	}
 
@@ -65,7 +65,10 @@ func generateTemplates(config Config) {
 	}
 
 	mainTmp := template.Must(template.New("main").Parse(main))
-	mainTmp.Execute(os.Stdout, config)
+	err = mainTmp.Execute(os.Stdout, config)
+	if err != nil {
+		log.Error(err)
+	}
 }
 
 func removeAll(path string) {
