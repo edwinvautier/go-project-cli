@@ -1,2 +1,0 @@
-- generate template for main.go
-- handle the sigterm
