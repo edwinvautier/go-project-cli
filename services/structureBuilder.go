@@ -1,8 +1,8 @@
 package services
 
 import (
+	"os/exec"
 	"os"
-
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/gobuffalo/packr/v2"
 	log "github.com/sirupsen/logrus"
@@ -55,6 +55,7 @@ func CreateStructure(path string, modules []string) {
 		}
 	}
 
+	initRepository(path)
 	generateTemplates(config)
 }
 
@@ -63,6 +64,14 @@ func generateTemplates(config Config) {
 	config.Box = packr.New("My Box", "../templates")
 
 	executeTemplate("", "main.txt", "main.go", config)
+}
+
+func initRepository(path string) {
+	// Init git repository
+	err := exec.Command("git", "init", path).Run()
+	if err != nil {
+		log.Error(err)
+	}	
 }
 
 func removeAll(path string) {
