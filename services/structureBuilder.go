@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Config is the structure passed to the templates executors in order for them to access informations such as the username, its choices of modules etc..
 type Config struct {
 	HasRouter 	bool
 	HasDB     	bool
@@ -18,6 +19,7 @@ type Config struct {
 	AppName 	string
 }
 
+// CreateStructure is the function used to create the configuration for the current command, create the repository and execute the templates inside.
 func CreateStructure(path string, modules []string, username string, appName string) {
 	// Create the folder for the new project
 	if _, err := os.Stat(path); os.IsNotExist(err) {
