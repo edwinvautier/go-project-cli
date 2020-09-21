@@ -16,7 +16,7 @@ cd go-project-cli
 make install
 ```
 
-## Uninstall 
+## Uninstall
 
 ```sh
 cd go-project-cli
@@ -24,10 +24,10 @@ cd go-project-cli
 make uninstall
 ```
 
---- 
+* * *
 
 ## Documentation
 
-|command|description|example|
-|-|-|-|
-|create|Creates a repository with the configuration you want.|`go-cli create my-app`|
+| command | description                                           | example                |
+| ------- | ----------------------------------------------------- | ---------------------- |
+| create  | Creates a repository with the configuration you want. | `go-cli create my-app` |

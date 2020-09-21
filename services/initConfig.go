@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// CreateConfigFile is the function that creates the config file in the user filesystem if it doesn't exist.
 func CreateConfigFile() *os.File {
 	usr, err := user.Current()
     if err != nil {
@@ -18,17 +19,6 @@ func CreateConfigFile() *os.File {
 		log.Error(err)
 		return nil
 	}
-	
-	return file
-}
-
-func GetConfigFile() *os.File {
-	usr, err := user.Current()
-    if err != nil {
-        return nil
-    }
-	configPath := usr.HomeDir + "/.go-project-cli.yaml"
-	file, err := os.Open(configPath)
 	
 	return file
 }
