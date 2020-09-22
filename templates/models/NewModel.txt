@@ -1,0 +1,67 @@
+package models
+
+import (
+	"github.com/jinzhu/gorm"
+	"errors"
+)
+
+type {{.Name}} struct {
+	ID uint64         `gorm:"primary_key"`
+	{{range .Fields}}{{.Name}}  {{.Type}}
+    {{end}}
+}
+
+func Create{{.Name}}(player *{{.Name}}) (*{{.Name}}, error) {
+	var err error
+	
+	err = db.Debug().Create(&player).Error
+	if err != nil {
+		return &{{.Name}}{}, err
+	}
+	return player, nil
+}
+
+func Edit{{.Name}}ByID(player *{{.Name}}, id uint64) error {
+	var err error
+	var old {{.Name}}
+	err = db.Debug().Where("id = ?", id).First(&old).Error
+	if gorm.IsRecordNotFoundError(err) {
+		return errors.New("{{.Name}} Not Found")
+	}
+	player.ID = id
+
+	err = db.Debug().Save(&player).Error
+	if err != nil {
+		return errors.New("Could'nt update {{.Name}}")
+	}
+
+	return nil
+}
+
+func Delete{{.Name}}ByID(id uint64) ({{.Name}}, error) {
+
+	var err error
+	var player {{.Name}}
+
+	err = db.Debug().Delete(&player, id).Error
+	if err != nil {
+		return {{.Name}}{}, err
+	}
+	if gorm.IsRecordNotFoundError(err) {
+		return {{.Name}}{}, errors.New("{{.Name}} Not Found")
+	}
+	return player, err
+}
+
+func Find{{.Name}}ByID(uid uint64) (*{{.Name}}, error) {
+	var err error
+	var player {{.Name}}
+	err = db.Debug().Model({{.Name}}{}).Where("id = ?", uid).Take(&player).Error
+	if err != nil {
+		return &{{.Name}}{}, err
+	}
+	if gorm.IsRecordNotFoundError(err) {
+		return &{{.Name}}{}, errors.New("{{.Name}} Not Found")
+	}
+	return &player, err
+}

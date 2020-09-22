@@ -1,7 +1,11 @@
 package cmd
 
 import (
+	"html/template"
+	"os"
+
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/gobuffalo/packr/v2"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -10,7 +14,7 @@ import (
 var makeCmd = &cobra.Command{
 	Use:   "make",
 	Short: "This command is used to generate new models inside your application.",
-	Long: `This command is used to generate new models inside your application.`,
+	Long:  `This command is used to generate new models inside your application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 2 {
 			log.Fatal("2 parameters required.")
@@ -22,12 +26,13 @@ var makeCmd = &cobra.Command{
 		}
 
 		entity := Entity{
-			Name: args[0],
+			Name:   args[1],
 			Fields: make([]Field, 0),
 		}
 
 		promptUserForEntityFields(&entity)
-		log.Info(entity)
+
+		generateModelFile(entity)
 	},
 }
 
@@ -43,8 +48,8 @@ type Field struct {
 
 // Entity is the struct that represents the entity the user wants to create
 type Entity struct {
-	Name 	string
-	Fields 	[]Field
+	Name   string
+	Fields []Field
 }
 
 func promptUserForEntityFields(entity *Entity) {
@@ -59,7 +64,7 @@ func promptUserForEntityFields(entity *Entity) {
 		if fieldName == "" {
 			break
 		}
-		field := Field {
+		field := Field{
 			Name: fieldName,
 		}
 
@@ -72,5 +77,30 @@ func promptUserForEntityFields(entity *Entity) {
 		field.Type = fType
 
 		entity.Fields = append(entity.Fields, field)
+	}
+}
+
+func generateModelFile(entity Entity) {
+	box := packr.New("My Box", "../templates")
+	// Get template content as string
+	templateString, err := box.FindString("models/NewModel.txt")
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
+	// Create the file
+	file, err := os.Create("./models/" + entity.Name + "Struct.go")
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
+	// Execute template and write file
+	parsedTemplate := template.Must(template.New("template").Parse(templateString))
+	err = parsedTemplate.Execute(file, entity)
+	if err != nil {
+		log.Error(err)
+		return
 	}
 }
