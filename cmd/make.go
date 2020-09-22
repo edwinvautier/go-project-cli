@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/AlecAivazis/survey/v2"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -20,9 +21,13 @@ var makeCmd = &cobra.Command{
 			log.Fatal("Unknown command make " + subcommand)
 		}
 
-		entityName := args[1]
+		entity := Entity{
+			Name: args[0],
+			Fields: make([]Field, 0),
+		}
 
-		entityStruct := promptUserForEntityFields()
+		promptUserForEntityFields(&entity)
+		log.Info(entity)
 	},
 }
 
@@ -30,6 +35,42 @@ func init() {
 	rootCmd.AddCommand(makeCmd)
 }
 
-func promptUserForEntityFields() interface{} {
-	var entity interface {}
+// Field represents one field of the entity the user wants to create
+type Field struct {
+	Name string
+	Type string
+}
+
+// Entity is the struct that represents the entity the user wants to create
+type Entity struct {
+	Name 	string
+	Fields 	[]Field
+}
+
+func promptUserForEntityFields(entity *Entity) {
+	for true {
+		fieldName := ""
+		namePrompt := &survey.Input{
+			Message: "Choose new field name (Press enter to stop adding fields)",
+		}
+		survey.AskOne(namePrompt, &fieldName)
+
+		// If field name is empty then stop the function
+		if fieldName == "" {
+			break
+		}
+		field := Field {
+			Name: fieldName,
+		}
+
+		fType := ""
+		typePrompt := &survey.Select{
+			Message: "Choose a type for " + fieldName + ":",
+			Options: []string{"string", "boolean", "int", "float", "date"},
+		}
+		survey.AskOne(typePrompt, &fType)
+		field.Type = fType
+
+		entity.Fields = append(entity.Fields, field)
+	}
 }
