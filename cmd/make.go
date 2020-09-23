@@ -37,6 +37,12 @@ var makeCmd = &cobra.Command{
 			Fields: 	make([]Field, 0),
 		}
 
+		filename := "./models/" + entity.Name + "Struct.go"
+		// Check if a file exists for an entity with this name
+		if fileExists(filename) {
+			log.WithField("filename", filename).Fatal("A file already exists for this entity!")
+		}
+
 		promptUserForEntityFields(&entity)
 
 		generateModelFile(entity)
@@ -117,4 +123,12 @@ func upperCaseFirstChar(word string) string {
 	a := []rune(word)
 	a[0] = unicode.ToUpper(a[0])
 	return string(a)
+}
+
+func fileExists(path string) bool {
+    _, err := os.Stat(path)
+    if os.IsNotExist(err) {
+        return false
+    }
+    return true
 }
