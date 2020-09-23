@@ -28,7 +28,7 @@ make uninstall
 
 ## Documentation
 
-| command       | description                                                 | example                          |
-| ------------- | ----------------------------------------------------------- | -------------------------------- |
-| create        | Creates a repository with the configuration you want.       | `go-cli create my-app`           |
+| command       | description                                                   | example                          |
+| ------------- | ------------------------------------------------------------- | -------------------------------- |
+| create        | Creates a repository with the configuration you want.         | `go-cli create my-app`           |
 | make `entity` | Create a new struct and repo  sitory for the entity you want. | `go-cli make entity entity-name` |
