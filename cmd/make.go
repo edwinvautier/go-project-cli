@@ -8,6 +8,7 @@ import (
 	"github.com/gobuffalo/packr/v2"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"unicode"
 )
 
 // makeCmd represents the make command
@@ -25,9 +26,16 @@ var makeCmd = &cobra.Command{
 			log.Fatal("Unknown command make " + subcommand)
 		}
 
+		a := []rune(args[1])
+		a[0] = unicode.ToLower(a[0])
+		lowerName := string(a)
+		a[0] = unicode.ToUpper(a[0])
+		upperName := string(a)
+
 		entity := Entity{
-			Name:   args[1],
-			Fields: make([]Field, 0),
+			Name:   	upperName,
+			LowerName: 	lowerName,
+			Fields: 	make([]Field, 0),
 		}
 
 		promptUserForEntityFields(&entity)
@@ -48,8 +56,9 @@ type Field struct {
 
 // Entity is the struct that represents the entity the user wants to create
 type Entity struct {
-	Name   string
-	Fields []Field
+	Name   		string
+	LowerName 	string
+	Fields 		[]Field
 }
 
 func promptUserForEntityFields(entity *Entity) {
