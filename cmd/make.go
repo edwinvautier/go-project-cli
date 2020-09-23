@@ -26,6 +26,10 @@ var makeCmd = &cobra.Command{
 			log.Fatal("Unknown command make " + subcommand)
 		}
 
+		if !fileExists("./main.go") {
+			log.Fatal("Please go inside at the root of go project to make an entity")
+		}
+
 		a := []rune(args[1])
 		a[0] = unicode.ToLower(a[0])
 		lowerName := string(a)
