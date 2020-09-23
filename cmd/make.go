@@ -29,8 +29,7 @@ var makeCmd = &cobra.Command{
 		a := []rune(args[1])
 		a[0] = unicode.ToLower(a[0])
 		lowerName := string(a)
-		a[0] = unicode.ToUpper(a[0])
-		upperName := string(a)
+		upperName := upperCaseFirstChar(args[1])
 
 		entity := Entity{
 			Name:   	upperName,
@@ -74,7 +73,7 @@ func promptUserForEntityFields(entity *Entity) {
 			break
 		}
 		field := Field{
-			Name: fieldName,
+			Name: upperCaseFirstChar(fieldName),
 		}
 
 		fType := ""
@@ -112,4 +111,10 @@ func generateModelFile(entity Entity) {
 		log.Error(err)
 		return
 	}
+}
+
+func upperCaseFirstChar(word string) string {
+	a := []rune(word)
+	a[0] = unicode.ToUpper(a[0])
+	return string(a)
 }
