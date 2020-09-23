@@ -2,13 +2,14 @@ package models
 
 import (
 	"github.com/jinzhu/gorm"
-	"errors"
+	"errors"{{if .HasDate}}
+	"time"{{end}}
 )
 
 type {{.Name}} struct {
 	ID uint64         `gorm:"primary_key"`
-	{{range .Fields}}{{.Name}}  {{.Type}}
-    {{end}}
+	{{range .Fields}}{{.Name}}	{{if (eq .Type "date")}}time.Time{{else}}{{.Type}}{{end}}
+	{{end}}
 }
 
 func Create{{.Name}}({{.LowerName}} *{{.Name}}) (*{{.Name}}, error) {
@@ -18,6 +19,7 @@ func Create{{.Name}}({{.LowerName}} *{{.Name}}) (*{{.Name}}, error) {
 	if err != nil {
 		return &{{.Name}}{}, err
 	}
+
 	return {{.LowerName}}, nil
 }
 
@@ -50,6 +52,7 @@ func Delete{{.Name}}ByID(id uint64) ({{.Name}}, error) {
 	if gorm.IsRecordNotFoundError(err) {
 		return {{.Name}}{}, errors.New("{{.Name}} Not Found")
 	}
+
 	return {{.LowerName}}, err
 }
 
@@ -63,5 +66,6 @@ func Find{{.Name}}ByID(uid uint64) (*{{.Name}}, error) {
 	if gorm.IsRecordNotFoundError(err) {
 		return &{{.Name}}{}, errors.New("{{.Name}} Not Found")
 	}
+
 	return &{{.LowerName}}, err
 }

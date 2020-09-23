@@ -39,6 +39,7 @@ var makeCmd = &cobra.Command{
 			Name:   	upperName,
 			LowerName: 	lowerName,
 			Fields: 	make([]Field, 0),
+			HasDate:	false,
 		}
 
 		filename := "./models/" + entity.Name + "Struct.go"
@@ -68,6 +69,7 @@ type Entity struct {
 	Name   		string
 	LowerName 	string
 	Fields 		[]Field
+	HasDate		bool
 }
 
 func promptUserForEntityFields(entity *Entity) {
@@ -93,6 +95,10 @@ func promptUserForEntityFields(entity *Entity) {
 		}
 		survey.AskOne(typePrompt, &fType)
 		field.Type = fType
+
+		if fType == "date" {
+			entity.HasDate = true
+		}
 
 		entity.Fields = append(entity.Fields, field)
 	}
