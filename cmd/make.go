@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"html/template"
+	"github.com/edwinvautier/go-project-cli/services"
 	"os"
 
 	"github.com/AlecAivazis/survey/v2"
@@ -113,16 +113,7 @@ func generateModelFile(entity Entity) {
 		return
 	}
 
-	// Create the file
-	file, err := os.Create("./models/" + entity.Name + "Struct.go")
-	if err != nil {
-		log.Error(err)
-		return
-	}
-
-	// Execute template and write file
-	parsedTemplate := template.Must(template.New("template").Parse(templateString))
-	err = parsedTemplate.Execute(file, entity)
+	err = services.ExecuteTemplate(entity, entity.Name + "Struct.go","./models/", templateString)
 	if err != nil {
 		log.Error(err)
 		return

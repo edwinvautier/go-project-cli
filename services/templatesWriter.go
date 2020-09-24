@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func executeTemplate(path string, name string, outputName string, config Config) {
+func generateFile(path string, name string, outputName string, config Config) {
 	// Get template content as string
 	templateString, err := config.Box.FindString(path + name)
 	if err != nil {
@@ -19,18 +19,24 @@ func executeTemplate(path string, name string, outputName string, config Config)
 		os.Mkdir(config.Path + "/" + path, os.ModePerm)
 	}
 
-	// Create the file
-	file, err := os.Create(config.Path + "/" + path + outputName)
+	err = ExecuteTemplate(config, outputName, config.Path + "/" + path, templateString)
 	if err != nil {
 		log.Error(err)
 		return
+	}
+}
+
+func ExecuteTemplate(config interface{}, outputName string, path string, templateString string) error{
+	// Create the file
+	file, err := os.Create(path + outputName)
+	if err != nil {
+		log.Error(err)
+		return err
 	}
 
 	// Execute template and write file
 	parsedTemplate := template.Must(template.New("template").Parse(templateString))
 	err = parsedTemplate.Execute(file, config)
-	if err != nil {
-		log.Error(err)
-		return
-	}
+
+	return nil
 }
