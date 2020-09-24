@@ -51,6 +51,8 @@ var makeCmd = &cobra.Command{
 		promptUserForEntityFields(&entity)
 
 		generateModelFile(entity)
+
+		updateMigrations()
 	},
 }
 
@@ -133,3 +135,22 @@ func fileExists(path string) bool {
     }
     return true
 }
+
+func updateMigrations() {
+	box := packr.New("My Box", "../templates")
+	// Get template content as string
+	templateString, err := box.FindString("models/migrations.txt")
+	if err != nil {
+		log.Error(err) 
+		return
+	}
+
+	entitiesList := services.GetEntitiesList()
+	err = services.ExecuteTemplate(entitiesList, "Migrations.go", "./models/", templateString)
+
+	if err != nil {
+		log.Error(err)
+		return
+	}
+}
+
