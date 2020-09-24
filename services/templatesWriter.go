@@ -26,6 +26,7 @@ func generateFile(path string, name string, outputName string, config Config) {
 	}
 }
 
+// ExecuteTemplate takes a config, file string and computes it into a file
 func ExecuteTemplate(config interface{}, outputName string, path string, templateString string) error{
 	// Create the file
 	file, err := os.Create(path + outputName)
