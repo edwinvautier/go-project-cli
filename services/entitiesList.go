@@ -21,3 +21,13 @@ func GetEntitiesList() []string {
 	
 	return entities
 }
+
+func GetTypeOptions() []string {
+	entitiesList := GetEntitiesList()
+	options := []string{"string", "boolean", "int", "float", "date", "slice"}
+	for _, entity := range entitiesList {
+		options = append(options, entity)
+	}
+
+	return options
+}

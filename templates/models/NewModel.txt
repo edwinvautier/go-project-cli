@@ -3,12 +3,13 @@ package models
 import (
 	"github.com/jinzhu/gorm"
 	"errors"{{if .HasDate}}
-	"time"{{end}}
+	"time"{{end}}{{if .HasCustomTypes}}
+	"github.com///models"{{end}}
 )
 
 type {{.Name}} struct {
 	ID uint64         `gorm:"primary_key"`
-	{{range .Fields}}{{.Name}}	{{if (eq .Type "date")}}time.Time{{else}}{{.Type}}{{end}}
+	{{range .Fields}}{{.Name}}	{{if (eq .Type "date")}}time.Time{{else}}{{if eq .Type "slice"}}[]{{.SliceType}}{{else}}{{.Type}}{{end}}{{end}}
 	{{end}}
 }
 

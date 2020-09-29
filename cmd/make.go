@@ -36,10 +36,11 @@ var makeCmd = &cobra.Command{
 		upperName := upperCaseFirstChar(args[1])
 
 		entity := Entity{
-			Name:   	upperName,
-			LowerName: 	lowerName,
-			Fields: 	make([]Field, 0),
-			HasDate:	false,
+			Name:   		upperName,
+			LowerName: 		lowerName,
+			Fields: 		make([]Field, 0),
+			HasDate:		false,
+			HasCustomTypes: false,
 		}
 
 		filename := "./models/" + entity.Name + "Struct.go"
@@ -62,16 +63,19 @@ func init() {
 
 // Field represents one field of the entity the user wants to create
 type Field struct {
-	Name string
-	Type string
+	Name 		string
+	Type 		string
+	IsSlice 	bool
+	SliceType	string
 }
 
 // Entity is the struct that represents the entity the user wants to create
 type Entity struct {
-	Name   		string
-	LowerName 	string
-	Fields 		[]Field
-	HasDate		bool
+	Name   			string
+	LowerName 		string
+	Fields 			[]Field
+	HasDate			bool
+	HasCustomTypes	bool
 }
 
 func promptUserForEntityFields(entity *Entity) {
@@ -88,22 +92,42 @@ func promptUserForEntityFields(entity *Entity) {
 		}
 		field := Field{
 			Name: upperCaseFirstChar(fieldName),
+			IsSlice: false,
 		}
 
 		fType := ""
 		typePrompt := &survey.Select{
 			Message: "Choose a type for " + fieldName + ":",
-			Options: []string{"string", "boolean", "int", "float", "date"},
+			Options: services.GetTypeOptions(),
 		}
 		survey.AskOne(typePrompt, &fType)
 		field.Type = fType
 
 		if fType == "date" {
 			entity.HasDate = true
+		} else if fType == "slice" {
+			field.IsSlice = true
+
+			sliceTypePrompt := &survey.Select{
+				Message: "Slice type :",
+				Options: services.GetTypeOptions(),
+			}
+			survey.AskOne(sliceTypePrompt, &field.SliceType)
+
+			if choosedCustomType(field.SliceType) {
+				entity.HasCustomTypes = true
+				field.SliceType = "models." + field.SliceType
+			}
 		}
 
+		if choosedCustomType(field.Type) {
+			entity.HasCustomTypes = true
+			field.Type = "models." + field.Type
+		}
+		
 		entity.Fields = append(entity.Fields, field)
 	}
+	log.Info(entity)
 }
 
 func generateModelFile(entity Entity) {
@@ -152,5 +176,18 @@ func updateMigrations() {
 		log.Error(err)
 		return
 	}
+}
+
+func choosedCustomType(cType string) bool{
+	entitiesList := services.GetEntitiesList()
+	log.Info(cType)
+	for _, entityName := range entitiesList {
+		log.Info(entityName)
+        if entityName == cType {
+            return true
+        }
+	}
+	
+	return false
 }
 
