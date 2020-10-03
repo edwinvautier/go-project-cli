@@ -1,0 +1,72 @@
+package models
+
+import (
+	"github.com/jinzhu/gorm"
+	"errors"{{if .HasDate}}
+	"time"{{end}}{{if .HasCustomTypes}}
+	"{{.ModulesPath}}/models"{{end}}
+)
+
+type {{.Name}} struct {
+	ID uint64         `gorm:"primary_key"`
+	{{range .Fields}}{{.Name}}	{{if (eq .Type "date")}}time.Time{{else}}{{if eq .Type "slice"}}[]{{.SliceType}}{{else}}{{.Type}}{{end}}{{end}}
+	{{end}}
+}
+
+func Create{{.Name}}({{.LowerName}} *{{.Name}}) (*{{.Name}}, error) {
+	var err error
+	
+	err = db.Debug().Create(&{{.LowerName}}).Error
+	if err != nil {
+		return &{{.Name}}{}, err
+	}
+
+	return {{.LowerName}}, nil
+}
+
+func Edit{{.Name}}ByID({{.LowerName}} *{{.Name}}, id uint64) error {
+	var err error
+	var old {{.Name}}
+	err = db.Debug().Where("id = ?", id).First(&old).Error
+	if gorm.IsRecordNotFoundError(err) {
+		return errors.New("{{.Name}} Not Found")
+	}
+	{{.LowerName}}.ID = id
+
+	err = db.Debug().Save(&{{.LowerName}}).Error
+	if err != nil {
+		return errors.New("Could'nt update {{.Name}}")
+	}
+
+	return nil
+}
+
+func Delete{{.Name}}ByID(id uint64) ({{.Name}}, error) {
+
+	var err error
+	var {{.LowerName}} {{.Name}}
+
+	err = db.Debug().Delete(&{{.LowerName}}, id).Error
+	if err != nil {
+		return {{.Name}}{}, err
+	}
+	if gorm.IsRecordNotFoundError(err) {
+		return {{.Name}}{}, errors.New("{{.Name}} Not Found")
+	}
+
+	return {{.LowerName}}, err
+}
+
+func Find{{.Name}}ByID(uid uint64) (*{{.Name}}, error) {
+	var err error
+	var {{.LowerName}} {{.Name}}
+	err = db.Debug().Model({{.Name}}{}).Where("id = ?", uid).Take(&{{.LowerName}}).Error
+	if err != nil {
+		return &{{.Name}}{}, err
+	}
+	if gorm.IsRecordNotFoundError(err) {
+		return &{{.Name}}{}, errors.New("{{.Name}} Not Found")
+	}
+
+	return &{{.LowerName}}, err
+}

@@ -68,28 +68,28 @@ func CreateStructure(path string, modules []string, username string, appName str
 func generateTemplates(config Config) {
 	// Generate packr Box
 	config.Box = packr.New("My Box", "../templates")
-
-	executeTemplate("", "main.txt", "main.go", config)
-	executeTemplate("", "go.mod.txt", "go.mod", config)
-	executeTemplate("", "readme.txt", "README.md", config)
-	executeTemplate("", "gitignore.txt", ".gitignore", config)
-	executeTemplate("services/", "lib.txt", "lib.go", config)
+	 
+	generateFile("", "main.txt", "main.go", config)
+	generateFile("", "go.mod.txt", "go.mod", config)
+	generateFile("", "readme.txt", "README.md", config)
+	generateFile("", "gitignore.txt", ".gitignore", config)
+	generateFile("services/", "lib.txt", "lib.go", config)
 	
 	if config.HasDB {
-		executeTemplate("models/", "PlayerStruct.txt", "PlayerStruct.go", config)
-		executeTemplate("models/", "DBConnector.txt", "DBConnector.go", config)
-		executeTemplate("models/", "migrations.txt", "Migrations.go", config)
+		generateFile("models/", "PlayerStruct.txt", "PlayerStruct.go", config)
+		generateFile("models/", "DBConnector.txt", "DBConnector.go", config)
+		generateFile("models/", "migrations.txt", "Migrations.go", config)
 	}
 
 	if config.HasRouter {
-		executeTemplate("routes/", "Router.txt", "Router.go", config)
-		executeTemplate("controllers/", "PlayersController.txt", "PlayersController.go", config)
-		executeTemplate("controllers/", "RootController.txt", "RootController.go", config)
+		generateFile("routes/", "Router.txt", "Router.go", config)
+		generateFile("controllers/", "PlayersController.txt", "PlayersController.go", config)
+		generateFile("controllers/", "RootController.txt", "RootController.go", config)
 	}
 
 	if config.HasDocker {
-		executeTemplate("", "dockerfile.txt", "Dockerfile", config)
-		executeTemplate("", "docker-compose.txt", "docker-compose.yml", config)
+		generateFile("", "dockerfile.txt", "Dockerfile", config)
+		generateFile("", "docker-compose.txt", "docker-compose.yml", config)
 	}
 }
 
