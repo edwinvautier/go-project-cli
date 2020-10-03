@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"strings"
 	"github.com/edwinvautier/go-project-cli/services"
 	"os"
 
@@ -76,6 +77,7 @@ type Entity struct {
 	Fields 			[]Field
 	HasDate			bool
 	HasCustomTypes	bool
+	ModulesPath		string
 }
 
 func promptUserForEntityFields(entity *Entity) {
@@ -127,7 +129,8 @@ func promptUserForEntityFields(entity *Entity) {
 		
 		entity.Fields = append(entity.Fields, field)
 	}
-	log.Info(entity)
+	wdPath, _ := os.Getwd()
+	entity.ModulesPath = strings.Split(wdPath, "src/")[1]
 }
 
 func generateModelFile(entity Entity) {

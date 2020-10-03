@@ -4,7 +4,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"errors"{{if .HasDate}}
 	"time"{{end}}{{if .HasCustomTypes}}
-	"github.com///models"{{end}}
+	"{{.ModulesPath}}/models"{{end}}
 )
 
 type {{.Name}} struct {
