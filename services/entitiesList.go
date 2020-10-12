@@ -22,6 +22,7 @@ func GetEntitiesList() []string {
 	return entities
 }
 
+// GetTypeOptions returns a list of strings for user prompt of data types when creating new models
 func GetTypeOptions() []string {
 	entitiesList := GetEntitiesList()
 	options := []string{"string", "boolean", "int", "float", "date", "slice"}
