@@ -7,6 +7,10 @@ A CLI to initialize go projects.
 ## Install
 
 ```sh
+go get github.com/edwinvautier/go-project-cli
+
+# OR
+
 git clone https://github.com/edwinvautier/go-project-cli.git
 # OR
 git clone git@github.com:edwinvautier/go-project-cli.git
